@@ -101,23 +101,23 @@
         
         .roleta-wrapper {
             position: relative;
-            width: 350px;
-            height: 350px;
+            width: 380px;
+            height: 380px;
             margin: 30px auto;
         }
         
         .seta {
             position: absolute;
-            top: -25px;
+            top: -30px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 25px solid transparent;
-            border-right: 25px solid transparent;
-            border-top: 50px solid #dc2626;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-top: 60px solid #ffd700;
             z-index: 10;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
         }
         
         .roleta {
@@ -126,26 +126,49 @@
             border-radius: 50%;
             position: relative;
             transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            border: 5px solid #333;
+            background: radial-gradient(circle at center, #8B4513 0%, #654321 50%, #8B4513 100%);
+            box-shadow: 
+                0 0 0 15px #D4AF37,
+                0 0 0 18px #8B4513,
+                0 15px 50px rgba(0,0,0,0.5),
+                inset 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .roleta-inner {
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.4);
         }
         
         .fatia {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            clip-path: polygon(50% 50%, 50% 0%, 100% 0%);
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
+        }
+        
+        .fatia-conteudo {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-origin: 50% 100%;
         }
         
         .fatia-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform-origin: left center;
             font-weight: bold;
-            font-size: 18px;
-            white-space: nowrap;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            font-size: 20px;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
         }
         
         .centro {
@@ -153,35 +176,44 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 90px;
-            height: 90px;
-            background: #fbbf24;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            color: #333;
+            color: #fff;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            border: 5px solid #fff;
+            box-shadow: 
+                0 0 0 8px #8B4513,
+                0 8px 20px rgba(0,0,0,0.5),
+                inset 0 -3px 8px rgba(0,0,0,0.3),
+                inset 0 3px 8px rgba(255,255,255,0.3);
+            border: 3px solid #D4AF37;
             z-index: 5;
             transition: all 0.2s;
-            font-size: 18px;
+            font-size: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
         
         .centro:hover {
-            transform: translate(-50%, -50%) scale(1.1);
-            background: #fcd34d;
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 
+                0 0 0 8px #8B4513,
+                0 10px 25px rgba(0,0,0,0.6),
+                inset 0 -3px 8px rgba(0,0,0,0.3),
+                inset 0 3px 8px rgba(255,255,255,0.4);
         }
         
         .centro:active {
-            transform: translate(-50%, -50%) scale(0.95);
+            transform: translate(-50%, -50%) scale(0.98);
         }
         
         .centro.girando {
             pointer-events: none;
-            opacity: 0.7;
+            opacity: 0.8;
         }
         
         .resultado-container {
@@ -248,14 +280,16 @@
             
             <div class="roleta-wrapper">
                 <div class="seta"></div>
-                <div class="roleta" id="roleta"></div>
+                <div class="roleta">
+                    <div class="roleta-inner" id="roletaInner"></div>
+                </div>
                 <div class="centro" id="btnGirar" onclick="girarRoleta()">GIRAR</div>
             </div>
         </div>
         
         <!-- Etapa 3: Resultado -->
         <div id="resultado" class="hidden resultado-container">
-            <div class="resultado-icon">Parabens!</div>
+            <div class="resultado-icon">🎉</div>
             <h2 class="resultado-titulo">Parabens!</h2>
             <p class="resultado-msg">Voce ganhou:</p>
             <div class="resultado-premio" id="premioGanho"></div>
@@ -265,7 +299,6 @@
     </div>
 
     <script>
-        // CONFIGURACAO DOS PREMIOS
         let premios = {
             'Bone': { total: 10, distribuidos: 0, peso: 1 },
             'Caneta': { total: 600, distribuidos: 0, peso: 10 },
@@ -275,35 +308,43 @@
         
         let formData = {};
         let girando = false;
+        let rotacaoAtual = 0;
         
-        // URL DO GOOGLE APPS SCRIPT
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuaIWsExzpnnFkJGjv2RUHPhivh1iTCexvv3IM2G1Y72oiIW3DeL40GfPxkFYchdjj/exec';
         
-        // Inicializar
         window.onload = function() {
             criarRoleta();
         };
         
         function criarRoleta() {
-            const roleta = document.getElementById('roleta');
+            const container = document.getElementById('roletaInner');
             const nomes = Object.keys(premios);
-            const angulo = 360 / nomes.length;
-            const cores = ['#ffffff', '#dc2626']; // Branco e vermelho alternando
+            const numFatias = nomes.length;
+            const anguloFatia = 360 / numFatias;
             
             nomes.forEach((nome, i) => {
                 const fatia = document.createElement('div');
                 fatia.className = 'fatia';
-                fatia.style.transform = `rotate(${angulo * i}deg)`;
-                fatia.style.background = cores[i % 2];
+                
+                const cor = i % 2 === 0 ? '#DC143C' : '#F5DEB3';
+                const corTexto = i % 2 === 0 ? '#FFF' : '#8B0000';
+                
+                fatia.style.background = `linear-gradient(135deg, ${cor} 0%, ${cor === '#DC143C' ? '#8B0000' : '#DEB887'} 100%)`;
+                fatia.style.transform = `rotate(${anguloFatia * i}deg) skewY(${90 - anguloFatia}deg)`;
+                
+                const conteudo = document.createElement('div');
+                conteudo.className = 'fatia-conteudo';
+                conteudo.style.transform = `skewY(${-(90 - anguloFatia)}deg) rotate(${anguloFatia / 2}deg)`;
                 
                 const texto = document.createElement('div');
                 texto.className = 'fatia-text';
                 texto.textContent = nome;
-                texto.style.color = cores[i % 2] === '#ffffff' ? '#000' : '#fff';
-                texto.style.transform = `rotate(${angulo * i + angulo/2}deg) translateX(130px) rotate(90deg)`;
+                texto.style.color = corTexto;
+                texto.style.transform = `translateY(-80px)`;
                 
-                roleta.appendChild(fatia);
-                roleta.appendChild(texto);
+                conteudo.appendChild(texto);
+                fatia.appendChild(conteudo);
+                container.appendChild(fatia);
             });
         }
         
@@ -361,11 +402,12 @@
             const indice = nomes.indexOf(premio);
             const anguloBase = 360 / nomes.length;
             const anguloAlvo = anguloBase * indice;
-            const voltas = 5;
-            const rotacaoFinal = (360 * voltas) + (360 - anguloAlvo) + (anguloBase / 2);
+            const voltas = 5 + Math.floor(Math.random() * 3);
+            const rotacaoFinal = rotacaoAtual + (360 * voltas) + (360 - anguloAlvo) + (anguloBase / 2);
             
-            const roleta = document.getElementById('roleta');
-            roleta.style.transform = `rotate(${rotacaoFinal}deg)`;
+            const roletaInner = document.getElementById('roletaInner');
+            roletaInner.style.transform = `rotate(${rotacaoFinal}deg)`;
+            rotacaoAtual = rotacaoFinal % 360;
             
             setTimeout(() => {
                 premios[premio].distribuidos++;
@@ -407,9 +449,6 @@
             
             document.getElementById('resultado').classList.add('hidden');
             document.getElementById('formulario').classList.remove('hidden');
-            
-            const roleta = document.getElementById('roleta');
-            roleta.style.transform = 'rotate(0deg)';
             
             const btnGirar = document.getElementById('btnGirar');
             btnGirar.classList.remove('girando');
