@@ -183,29 +183,6 @@
             opacity: 0.7;
         }
         
-        .info-premios {
-            background: #f3f4f6;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-        
-        .info-premios h3 {
-            margin-bottom: 12px;
-            color: #333;
-        }
-        
-        .premio-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .premio-item:last-child {
-            border-bottom: none;
-        }
-        
         .resultado-container {
             text-align: center;
         }
@@ -237,20 +214,6 @@
         .hidden {
             display: none;
         }
-        
-        .aviso {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: #92400e;
-        }
-        
-        .aviso strong {
-            display: block;
-            margin-bottom: 5px;
-        }
     </style>
 </head>
 <body>
@@ -259,11 +222,6 @@
         <div id="formulario">
             <h1>Roleta da Sorte</h1>
             <p class="subtitle">Preencha seus dados e concorra a premios!</p>
-            
-            <div class="aviso">
-                <strong>Aviso de Configuracao:</strong>
-                Configure o Google Sheets no codigo JavaScript (linha 350) com sua URL do Apps Script.
-            </div>
             
             <div class="form-group">
                 <label>Nome Completo *</label>
@@ -292,11 +250,6 @@
                 <div class="roleta" id="roleta"></div>
                 <div class="centro" id="btnGirar" onclick="girarRoleta()">GIRAR</div>
             </div>
-            
-            <div class="info-premios">
-                <h3>Premios Disponiveis:</h3>
-                <div id="listaPremios"></div>
-            </div>
         </div>
         
         <!-- Etapa 3: Resultado -->
@@ -322,29 +275,13 @@
         let formData = {};
         let girando = false;
         
-        // URL DO GOOGLE APPS SCRIPT - VOCE PRECISA CONFIGURAR ISSO!
+        // URL DO GOOGLE APPS SCRIPT
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuaIWsExzpnnFkJGjv2RUHPhivh1iTCexvv3IM2G1Y72oiIW3DeL40GfPxkFYchdjj/exec';
         
         // Inicializar
         window.onload = function() {
-            carregarPremios();
             criarRoleta();
         };
-        
-        function carregarPremios() {
-            const lista = document.getElementById('listaPremios');
-            lista.innerHTML = '';
-            
-            Object.entries(premios).forEach(([nome, info]) => {
-                const item = document.createElement('div');
-                item.className = 'premio-item';
-                item.innerHTML = `
-                    <span>${nome}</span>
-                    <strong>${info.total - info.distribuidos} restantes</strong>
-                `;
-                lista.appendChild(item);
-            });
-        }
         
         function criarRoleta() {
             const roleta = document.getElementById('roleta');
@@ -435,7 +372,6 @@
                 document.getElementById('resultado').classList.remove('hidden');
                 document.getElementById('premioGanho').textContent = premio;
                 
-                carregarPremios();
                 girando = false;
             }, 4000);
         }
