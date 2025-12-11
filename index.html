@@ -101,23 +101,23 @@
         
         .roleta-wrapper {
             position: relative;
-            width: 320px;
-            height: 320px;
+            width: 350px;
+            height: 350px;
             margin: 30px auto;
         }
         
         .seta {
             position: absolute;
-            top: -20px;
+            top: -25px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 40px solid #dc2626;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-top: 50px solid #dc2626;
             z-index: 10;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
         }
         
         .roleta {
@@ -126,7 +126,8 @@
             border-radius: 50%;
             position: relative;
             transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 5px solid #333;
         }
         
         .fatia {
@@ -142,10 +143,9 @@
             left: 50%;
             transform-origin: left center;
             font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            font-size: 14px;
+            font-size: 18px;
             white-space: nowrap;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
         
         .centro {
@@ -153,8 +153,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
             background: #fbbf24;
             border-radius: 50%;
             display: flex;
@@ -163,10 +163,11 @@
             font-weight: bold;
             color: #333;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            border: 5px solid #fff;
             z-index: 5;
             transition: all 0.2s;
+            font-size: 18px;
         }
         
         .centro:hover {
@@ -266,10 +267,10 @@
     <script>
         // CONFIGURACAO DOS PREMIOS
         let premios = {
-            'Bone': { total: 10, distribuidos: 0, peso: 1, cor: '#ef4444' },
-            'Caneta': { total: 600, distribuidos: 0, peso: 10, cor: '#3b82f6' },
-            'Fone': { total: 50, distribuidos: 0, peso: 1, cor: '#10b981' },
-            'Copo': { total: 20, distribuidos: 0, peso: 2, cor: '#f59e0b' }
+            'Bone': { total: 10, distribuidos: 0, peso: 1 },
+            'Caneta': { total: 600, distribuidos: 0, peso: 10 },
+            'Fone': { total: 50, distribuidos: 0, peso: 1 },
+            'Copo': { total: 20, distribuidos: 0, peso: 2 }
         };
         
         let formData = {};
@@ -287,17 +288,19 @@
             const roleta = document.getElementById('roleta');
             const nomes = Object.keys(premios);
             const angulo = 360 / nomes.length;
+            const cores = ['#ffffff', '#dc2626']; // Branco e vermelho alternando
             
             nomes.forEach((nome, i) => {
                 const fatia = document.createElement('div');
                 fatia.className = 'fatia';
                 fatia.style.transform = `rotate(${angulo * i}deg)`;
-                fatia.style.background = premios[nome].cor;
+                fatia.style.background = cores[i % 2];
                 
                 const texto = document.createElement('div');
                 texto.className = 'fatia-text';
                 texto.textContent = nome;
-                texto.style.transform = `rotate(${angulo * i + angulo/2}deg) translateX(120px) rotate(90deg)`;
+                texto.style.color = cores[i % 2] === '#ffffff' ? '#000' : '#fff';
+                texto.style.transform = `rotate(${angulo * i + angulo/2}deg) translateX(130px) rotate(90deg)`;
                 
                 roleta.appendChild(fatia);
                 roleta.appendChild(texto);
@@ -385,7 +388,6 @@
                 data: new Date().toLocaleString('pt-BR')
             };
             
-            // Enviar para Google Sheets
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -393,7 +395,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(dados)
-            }).catch(err => console.log('Dados salvos localmente'));
+            }).catch(err => console.log('Erro ao enviar'));
             
             console.log('Participante:', dados);
         }
